@@ -57,7 +57,7 @@ export class Personagem extends Obj{
     }
 
     point(objeto){
-        if(objeto.x <= -100){
+        if(objeto.y >= 800){
             return true
         }else{
             return false

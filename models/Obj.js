@@ -1,82 +1,76 @@
-export default class Obj{
-    constructor(x,y,w,h,a){
+export default class Personagem{
+    constructor(x,imageSrc,cor,lk,rk,num){
         this.x = x
-        this.y = y
-        this.w = w
-        this.h = h
-        this.a = a
+        this.imageSrc = imageSrc
+        this.cor = cor
+        this.lk = lk
+        this.rk = rk
+        this.num = num
+
+        vida = 3
+        vx = 0
+        inv = 0
+        tick = 0
+        vivo = true
 
         this.imagem = new Image()
-        this.imagem.src = a
+        this.imagem.src = imageSrc  
+        
     }
-    des_char(ctx){
-        ctx.drawImage(this.imagem, this.x, this.y, this.w, this.h);
+
+    update(keys){
+        const A = keys[this.lk]
+        const D = keys[this.rk]
+
+        //Velocidade X
+        if(D && !A){
+            this.vx =  6
+        }else if (A && !D){
+            this.vx = -6
+        }else{
+            this.vx *= 0.7
+        }
+
+        //definir X como velocidade
+        this.x += this.vx
+
+
+        //Teleporte
+        if (this.x > 600){
+                this.x = -this.w 
+        }     
+
+        if (this.x < -this.w) {
+                this.x = 600     
+        }
+
+        //Invencibilidade
+        if (this.inv > 0){
+            this.inv--
+        }
+
+        this.tick++
+
+    }
+
+    recebeDano() {
+        if (this.inv > 0) return false;
+        this.vida--;
+        this.inv = 90;  // ~1.5s de invencibilidade
+        return true;
     }
 
 }
 
-export class Personagem extends Obj{
-    
-    dir = 0
-    vida = 5
-    pontos = 0
-    frame = 1
-    tempo = 0
+export class Inimigo{
+constructor(){
 
-    mov_char(keys){
-        const esq = keys['a']
-        const direi = keys['d']
-
-        if(!direi && !esq || esq && direi){
-            this.dir = 0
-        }
-        if(direi && !esq){
-            this.dir = 5
-        }
-        if(!direi && esq){
-            this.dir = -5
-        }
-        this.x += this.dir
-
-        if(this.x < -40){
-            this.x = 540
-        }else if(this.x > 580){
-            this.x = -40
-        }
-    }
-
-    colid(objeto){
-        if((this.x < objeto.x + objeto.w)&&
-          (this.x + this.w > objeto.x)&&
-          (this.y < objeto.y + objeto.h)&&
-          (this.y + this.h > objeto.y)){
-            return true
-        }else{
-            return false
-        }
-    }
-
-    point(objeto){
-        if(objeto.y >= 800){
-            return true
-        }else{
-            return false
-        }
-    }
 }
 
-export class Coletaveis extends Obj{
-    vel = 4
+}
 
-    recomeca(){
-        this.y = -100
-        this.x = Math.floor(Math.random() * (520 - 80) + 80)
-    }
+export class Bonus{
+    constructor(){
 
-    mov_it(){
-        this.y += this.vel
-        if(this.y >= 900){            
-            this.recomeca()         
-        }
     }
 }

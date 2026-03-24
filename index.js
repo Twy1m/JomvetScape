@@ -1,78 +1,176 @@
-import Obj, {Personagem, Coletaveis} from './models/Obj.js'
+import { Personagem, Inimigo, Bonus } from './models/Obj.js'
 
-let desenho = document.getElementById('desenho').getContext('2d')
+const canvas = document.getElementById('desenho')
+const ctx    = canvas.getContext('2d')
 
-let mainChar = new Personagem(250, 720, 80,80, 'img/jomvet8bit.png')
-let item1 = new Coletaveis(5500, 60, 80, 80, '/img/sprite1.png')
-let item2 = new Coletaveis(530, 60, 80, 80, '/img/sprite1.png')
-let item3 = new Coletaveis(200, 600, 80, 80, '/img/sprite1.png')
-// let item4 = new Coletaveis(200, 600, 80, 80, '/img/inimigo.png')
+const W = 600
+const H = 800
+
+const ST = {
+    INICIO:  0,
+    TRANS:   1,   // transição entre fases
+    JOGO:    2,
+    OVER:    3,
+    VITORIA: 4
+}
+
+let estado = ST.INICIO
+
+let p1, p2          // os dois players
+let inimigos        // array de inimigos
+let bonus           // array de bônus
+let pontuacao = 0
+let faseAtual = 0
+let tick      = 0   // contador geral de frames
+
+const FASES = [
+    {
+        nome:    'FASE 1',
+        sub:     'Trabalhem juntos!',
+        meta:    80,        // pontos para avançar
+        num:     4,         // quantidade de inimigos
+        vMin:    2.5,       // velocidade mínima dos inimigos
+        vMax:    4.5,       // velocidade máxima
+        zigzag:  false,     // inimigos em zigzag?
+        ceuA:    '#0a1628', // cor do topo do céu
+        ceuB:    '#162d4a', // cor da base do céu
+        chao:    '#1b4332',
+        chaoAcc: '#2d6a4f'
+    },
+    {
+        nome:    'FASE 2',
+        sub:     'Estão mais rápidos!',
+        meta:    200,
+        num:     6,
+        vMin:    4.5,
+        vMax:    7.5,
+        zigzag:  true,
+        ceuA:    '#180a2e',
+        ceuB:    '#351252',
+        chao:    '#4a1942',
+        chaoAcc: '#6d2e6d'
+    },
+    {
+        nome:    'FASE 3',
+        sub:     'MODO CAOS!',
+        meta:    380,
+        num:     8,
+        vMin:    6.0,
+        vMax:    11,
+        zigzag:  true,
+        ceuA:    '#2a0808',
+        ceuB:    '#521212',
+        chao:    '#7b1616',
+        chaoAcc: '#9c2626'
+    },
+]
 
 const keys = {}
 
-document.addEventListener('keydown', (e)=>{
-    keys[e.key] = true
+//e.key retorna o caractere, e.code retorna a posição física da tecla
+document.addEventListener('keydown', (e) => {
+    keys[e.code] = true
 })
-document.addEventListener('keyup', (e)=>{
-    keys[e.key] = false
+document.addEventListener('keyup', (e) => {
+    keys[e.code] = false
 })
 
-function colisao() {
-    if (mainChar.colid(item1)) {
-        item1.recomeca()
-        mainChar.vida -= 1
+function atualiza() {
+    tick++
 
-    }
-    if (mainChar.colid(item2)) {
-        item2.recomeca()
-        mainChar.vida -= 1
-    }
-    if (mainChar.colid(item3)) {
-        item3.recomeca()
-        
-        mainChar.vida -= 1
-    }
-    console.log('vida: ', mainChar.vida)
+    if (estado !== ST.JOGO) return  // só atualiza durante o jogo
+
+    p1.update(keys)
+    p2.update(keys)
+
+    inimigos.forEach(en => {
+        if (en.update(FASES[faseAtual])) pontuacao += 5
+    })
+
+    bonus.forEach(b => b.update())
 }
 
-function pontuacao() {
-    if (mainChar.point(item1)) {
-        mainChar.pontos += 5
-        item1.recomeca()
-    }
-    if (mainChar.point(item2)) {
-        mainChar.pontos += 5
-        item2.recomeca()
-    }
-    if (mainChar.point(item3)) {
-        mainChar.pontos += 5
-        item3.recomeca()
-    }
-    console.log(mainChar.pontos)
+function desenha() {
+    ctx.clearRect(0, 0, W, H)
+
+    if (estado === ST.INICIO)       desenhaInicio()
+    else if (estado === ST.TRANS)   desenhaTrans()
+    else if (estado === ST.JOGO)    desenhaJogo()
+    else if (estado === ST.OVER)    desenhaOver()
+    else if (estado === ST.VITORIA) desenhaVitoria()
 }
 
-function atualiza(){
-    mainChar.mov_char(keys)
-    item1.mov_it()
-    item2.mov_it()
-    item3.mov_it()
-    colisao()
-    pontuacao()
+function checarColisoes() {
+    for (const pl of [p1, p2]) {
+        if (!pl.vivo) continue  // ignora player morto
+
+        // colisão com inimigos
+        inimigos.forEach(en => {
+            if (pl.colide(en) && pl.hit()) {
+                en.reset()
+            }
+        })
+
+        // colisão com bônus
+        bonus.forEach(b => {
+            if (!b.ativo || !pl.colide(b)) return
+
+            b.coletar()
+
+            if (b.tipo === 'coracao') {
+                pl.vida = Math.min(5, pl.vida + 1)
+            } else if (b.tipo === 'osso') {
+                pontuacao += 10
+            } else {
+                pontuacao += 15
+            }
+        })
+    }
 }
 
-function desenhar(){
-    mainChar.des_char(desenho)
-    item1.des_char(desenho)
-    item2.des_char(desenho)
-    item3.des_char(desenho)
-}   
+function atualiza() {
+    tick++
+    if (estado !== ST.JOGO) return
 
-function main(){
-    desenho.clearRect(0,0,600,800)
-    desenhar()
+    p1.update(keys)
+    p2.update(keys)
+
+    inimigos.forEach(en => {
+        if (en.update(FASES[faseAtual])) pontuacao += 5
+    })
+
+    bonus.forEach(b => b.update())
+
+    checarColisoes()  // ← adiciona aqui
+}
+
+function iniciarJogo() {
+    faseAtual  = 0
+    pontuacao  = 0
+
+    p1 = new Personagem(150, 'img/jomvet8bit.png', '#4fc3f7', 'KeyA',       'KeyD',        1)
+    p2 = new Personagem(374, 'img/jomvet8bit.png', '#ff8a65', 'ArrowLeft',  'ArrowRight',  2)
+
+    setupFase()
+    estado = ST.JOGO
+}
+
+function setupFase() {
+    const f = FASES[faseAtual]
+
+    inimigos = Array.from({ length: f.num }, (_, i) => new Inimigo(f, i))
+
+    bonus = [
+        new Bonus(80),
+        new Bonus(250),
+        new Bonus(440)
+    ]
+}
+
+function loop() {
     atualiza()
-    console.log(mainChar.vida)
-    requestAnimationFrame(main)
+    desenha()
+    requestAnimationFrame(loop)
 }
 
-main()
+loop()

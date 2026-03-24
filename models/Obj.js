@@ -1,108 +1,243 @@
-export class Personagem{
-    constructor(x,imageSrc,cor,lk,rk,num){
-        this.x = x
-        this.imageSrc = imageSrc
-        this.cor = cor
-        this.lk = lk
-        this.rk = rk
-        this.num = num
+export class Personagem {
+  constructor(x, imageSrc, cor, lk, rk, num) {
+    this.x = x;
+    this.imageSrc = imageSrc;
+    this.cor = cor;
+    this.lk = lk;
+    this.rk = rk;
+    this.num = num;
 
-        this.vx   = 0
-        this.vida = 3
-        this.tick = 0
-        this.inv  = 0
-        this.vivo = true
+    this.vx = 0;
+    this.vida = 3;
+    this.tick = 0;
+    this.inv = 0;
+    this.vivo = true;
 
-        this.imagem = new Image()
-        this.imagem.src = imageSrc  
-        
-        this.w = 76
-        this.h = 76
+    this.imagem = new Image();
+    this.imagem.src = imageSrc;
+
+    this.w = 76;
+    this.h = 76;
+  }
+
+  update(keys) {
+    const A = keys[this.lk];
+    const D = keys[this.rk];
+
+    //Velocidade X
+    if (D && !A) {
+      this.vx = 6;
+    } else if (A && !D) {
+      this.vx = -6;
+    } else {
+      this.vx *= 0.7;
     }
 
-    update(keys){
-        const A = keys[this.lk]
-        const D = keys[this.rk]
+    //definir X como velocidade
+    this.x += this.vx;
 
-        //Velocidade X
-        if(D && !A){
-            this.vx =  6
-        }else if (A && !D){
-            this.vx = -6
-        }else{
-            this.vx *= 0.7
-        }
-
-        //definir X como velocidade
-        this.x += this.vx
-
-
-        //Teleporte
-        if (this.x > 600){
-                this.x = -this.w 
-        }     
-
-        if (this.x < -this.w) {
-                this.x = 600     
-        }
-
-        //Invencibilidade
-        if (this.inv > 0){
-            this.inv--
-        }
-
-        this.tick++
-
+    //Teleporte
+    if (this.x > 600) {
+      this.x = -this.w;
     }
 
-    draw(ctx) {
+    if (this.x < -this.w) {
+      this.x = 600;
+    }
+
+    //Invencibilidade
+    if (this.inv > 0) {
+      this.inv--;
+    }
+
+    this.tick++;
+  }
+
+  draw(ctx) {
     // pisca quando invencível, A cada 5 frames alterna entre mostrar e esconder, cria o efeito de piscar.
-    const bob = Math.sin(this.tick * 0.08) * 3
+    const bob = Math.sin(this.tick * 0.08) * 3;
 
     if (this.inv > 0 && Math.floor(this.inv / 5) % 2 === 1) {
-        return    ctx.drawImage(this.imagem, this.x, this.y + bob, this.w, this.h)
+      return ctx.drawImage(this.imagem, this.x, this.y + bob, this.w, this.h);
     }
 
     // desenha a imagem
-    ctx.save()
-    ctx.globalCompositeOperation = 'screen' // remove o fundo preto das imagens dos sprites. save() e restore() garantem que esse efeito não vaze para outros elementos.
-    ctx.drawImage(this.imagem, this.x, this.y + bob, this.w, this.h)
-    ctx.restore()
+    ctx.save();
+    ctx.globalCompositeOperation = "screen"; // remove o fundo preto das imagens dos sprites. save() e restore() garantem que esse efeito não vaze para outros elementos.
+    ctx.drawImage(this.imagem, this.x, this.y + bob, this.w, this.h);
+    ctx.restore();
 
     // badge P1 / P2
-    ctx.font = 'bold 8px monospace'
-    ctx.textAlign = 'center'
-    ctx.fillStyle = this.cor
-    ctx.fillText('P' + this.num, this.x + this.w / 2, this.y + bob - 5)
-    }
+    ctx.font = "bold 8px monospace";
+    ctx.textAlign = "center";
+    ctx.fillStyle = this.cor;
+    ctx.fillText("P" + this.num, this.x + this.w / 2, this.y + bob - 5);
+  }
 
-    colide(outro) {
-        return (
-            this.x < outro.x + outro.w &&
-            this.x + this.w > outro.x  &&
-            this.y < outro.y + outro.h &&
-            this.y + this.h > outro.y
-        )
-    }
+  colide(outro) {
+    return (
+      this.x < outro.x + outro.w &&
+      this.x + this.w > outro.x &&
+      this.y < outro.y + outro.h &&
+      this.y + this.h > outro.y
+    );
+  }
 
-    recebeDano() {
-        if (this.inv > 0) return false;
-            this.vida--;
-            this.inv = 90;  // ~1.5s de invencibilidade
-            return true;
-    }
-
+  recebeDano() {
+    if (this.inv > 0) return false;
+    this.vida--;
+    this.inv = 90; // ~1.5s de invencibilidade
+    return true;
+  }
 }
 
-export class Inimigo{
-constructor(){
+export class Inimigo {
+  constructor(faseAtual, stagger = 0) {
+    //Stagger, número que espaça os inimigos no spawn inicial (0, 1, 2, 3...)
 
-}
+    this.faseAtual = faseAtual
 
-}
+    //Tamanho do inimigo
+    this.w = 76;
+    this.h = 62;
 
-export class Bonus{
-    constructor(){
+    //frame do inimigo
+    this.fi = Math.floor(Math.random() * 4);
+    this.ft = 0;
 
+    //ZigZag dos inimigos
+    this.zigOff = Math.random() * Math.PI * 2;
+    this.zigAmp = 18 + Math.random() * 38;
+    this.zigSpd = 0.02 + Math.random() * 0.028;
+
+    this.frames = [
+      "img/sprite1.png",
+      "img/sprite2.png",
+      "img/sprite3.png",
+      "img/sprite4.png",
+    ].map((src) => {
+      const i = new Image();
+      i.src = src;
+      return i;
+    });
+
+    this._spawn(stagger * 160);
+    this.vel = faseAtual.vMin + Math.random() * (faseAtual.vMax - faseAtual.vMin)  //
+    
+  }
+
+  _spawn(yOff) {
+    this.bx = 18 + Math.random() * (600 - this.w - 36);
+    this.x = this.bx;
+    this.y = -this.h - yOff;
+  }
+
+  update(faseAtual) {
+    // 1. Move pra baixo
+    this.y += this.vel;
+
+    // 2. Zigzag
+    if (faseAtual.zigzag) {
+      this.zigOff += this.zigSpd;
+      this.x = this.bx + Math.sin(this.zigOff) * this.zigAmp;
     }
+
+    // 3. Avança o frame de animação
+    this.ft++;
+    if (this.ft >= 7) {
+      this.ft = 0;
+      this.fi = (this.fi + 1) % 4;
+    }
+
+    // 4. Saiu da tela por baixo
+    if (this.y > 820) {
+      this.vel =
+        faseAtual.vMin + Math.random() * (faseAtual.vMax - faseAtual.vMin);
+      this._spawn(0);
+      return true; // sinal pro index.js somar pontos
+    }
+
+    return false;
+  }
+
+  draw(ctx) {
+    const img = this.frames[this.fi];
+    if (img.complete && img.naturalWidth > 0) {
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      ctx.drawImage(img, this.x, this.y, this.w, this.h);
+      ctx.restore();
+    }
+  }
+
+  reset() {
+    this._spawn(0);
+  }
+}
+
+export class Bonus {
+    constructor(yOff = 0) {
+        this.w     = 36
+        this.h     = 36
+        this.ativo = true
+        this.cd    = 0
+        this.tick  = 0
+        this.spin  = 0
+        this._spawn(yOff)
+    }
+
+    update() {
+        // Se não estiver ativo, conta o cooldown
+        if (!this.ativo) {
+            this.cd--
+            if (this.cd <= 0) this._spawn(Math.random() * 250)
+            return
+        }
+    
+        // Se estiver ativo, move pra baixo
+        this.y   += this.vel
+        this.spin += 0.04
+        this.tick++
+    
+        // Saiu da tela por baixo
+        if (this.y > 820) this._spawn(0)
+    }
+
+    coletar() {
+        this.ativo = false
+        this.cd = 110 + Math.floor(Math.random() * 150)
+    }
+
+    draw(ctx) {
+        if (!this.ativo) return
+    
+        ctx.save()
+        ctx.translate(this.x + this.w / 2, this.y + this.h / 2)
+        ctx.rotate(Math.sin(this.tick * 0.05) * 0.2)
+    
+        if (this.tipo === 'coracao')     desenhaCoracao(ctx)
+        else if (this.tipo === 'osso') { ctx.rotate(this.spin); desenhaOsso(ctx) }
+        else                           { ctx.rotate(this.spin); desenhaStar(ctx) }
+    
+        ctx.restore()
+    }
+}
+
+function desenhaCoracao(ctx) {
+    ctx.fillStyle = '#ff4081'
+    ctx.beginPath()
+    // curvas bezier formando um coração
+    ctx.fill()
+}
+
+function desenhaOsso(ctx) {
+    ctx.fillStyle = '#f5f5dc'
+    // retângulo no meio + 4 círculos nas pontas
+    ctx.fill()
+}
+
+function desenhaStar(ctx) {
+    ctx.fillStyle = '#FFD700'
+    // 5 pontas com lineTo
+    ctx.fill()
 }

@@ -18,6 +18,7 @@ export class Personagem {
 
     this.w = 76;
     this.h = 76;
+    this.y = 690
   }
 
   update(keys) {

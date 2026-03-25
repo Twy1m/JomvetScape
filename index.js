@@ -74,21 +74,20 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('keyup', (e) => {
     keys[e.code] = false
 })
+document.addEventListener('keydown', (e) => {
+    keys[e.code] = true
 
-function atualiza() {
-    tick++
+    if (e.code === 'Enter') {
+        if (estado === ST.INICIO) iniciarJogo()
+        if (estado === ST.OVER)   iniciarJogo()
+        if (estado === ST.VITORIA) iniciarJogo()
+    }
 
-    if (estado !== ST.JOGO) return  // só atualiza durante o jogo
+    if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code)) {
+        e.preventDefault()
+    }
+})
 
-    p1.update(keys)
-    p2.update(keys)
-
-    inimigos.forEach(en => {
-        if (en.update(FASES[faseAtual])) pontuacao += 5
-    })
-
-    bonus.forEach(b => b.update())
-}
 
 function desenha() {
     ctx.clearRect(0, 0, W, H)
@@ -141,7 +140,147 @@ function atualiza() {
 
     bonus.forEach(b => b.update())
 
-    checarColisoes()  // ← adiciona aqui
+    checarColisoes()  
+
+    if (pontuacao >= FASES[faseAtual].meta) {
+        faseAtual++
+        if (faseAtual >= FASES.length) {
+            estado = ST.VITORIA
+        } else {
+            setupFase()
+            estado = ST.TRANS
+        }
+    }
+    if (!p1.vivo && !p2.vivo) {
+        estado = ST.OVER
+    }
+}
+
+function desenhaJogo() {
+    desenhaBG()
+
+    bonus.forEach(b => b.draw(ctx))
+    inimigos.forEach(en => en.draw(ctx))
+    p1.draw(ctx)
+    p2.draw(ctx)
+
+    desenhaHUD()
+}
+
+function desenhaBG() {
+    const f = FASES[faseAtual]
+
+    // gradiente do céu
+    const g = ctx.createLinearGradient(0, 0, 0, H)
+    g.addColorStop(0, f.ceuA)
+    g.addColorStop(1, f.ceuB)
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, W, H)
+
+    // chão
+    ctx.fillStyle = f.chao
+    ctx.fillRect(0, H - 40, W, 40)
+}
+
+function desenhaHUD() {
+    // fundo da barra
+    ctx.fillStyle = 'rgba(0,0,0,0.7)'
+    ctx.fillRect(0, 0, W, 50)
+
+    // pontuação
+    ctx.fillStyle = '#FFD700'
+    ctx.font = '14px "Press Start 2P", monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(pontuacao + ' pts', W / 2, 32)
+
+    // vidas P1
+    ctx.fillStyle = '#4fc3f7'
+    ctx.font = '10px "Press Start 2P", monospace'
+    ctx.textAlign = 'left'
+    ctx.fillText('P1  ' + '❤'.repeat(p1.vida), 10, 32)
+
+    // vidas P2
+    ctx.fillStyle = '#ff8a65'
+    ctx.textAlign = 'right'
+    ctx.fillText('P2  ' + '❤'.repeat(p2.vida), W - 10, 32)
+}
+
+function desenhaInicio() {
+    // fundo
+    ctx.fillStyle = '#060d18'
+    ctx.fillRect(0, 0, W, H)
+
+    // título
+    ctx.fillStyle = '#FFD700'
+    ctx.font = 'bold 32px "Press Start 2P", monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText('JomvetScape', W / 2, 200)
+
+    // subtítulo
+    ctx.fillStyle = '#ff8a65'
+    ctx.font = 'bold 16px "Press Start 2P", monospace'
+    ctx.fillText('2 PLAYERS', W / 2, 250)
+
+    // instrução
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '10px "Press Start 2P", monospace'
+    ctx.fillText('Pressione ENTER para iniciar', W / 2, 400)
+
+    // controles
+    ctx.fillStyle = '#4fc3f7'
+    ctx.fillText('P1 — A / D', W / 2, 500)
+    ctx.fillStyle = '#ff8a65'
+    ctx.fillText('P2 — ← / →', W / 2, 530)
+}
+
+function desenhaOver() {
+    ctx.fillStyle = '#150505'
+    ctx.fillRect(0, 0, W, H)
+
+    ctx.fillStyle = '#ff4444'
+    ctx.font = 'bold 40px "Press Start 2P", monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText('GAME OVER', W / 2, 280)
+
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '12px "Press Start 2P", monospace'
+    ctx.fillText('Pontuação: ' + pontuacao, W / 2, 360)
+
+    ctx.fillStyle = '#aaaaaa'
+    ctx.font = '10px "Press Start 2P", monospace'
+    ctx.fillText('Pressione ENTER para tentar de novo', W / 2, 460)
+}
+
+function desenhaVitoria() {
+    ctx.fillStyle = '#050d05'
+    ctx.fillRect(0, 0, W, H)
+
+    ctx.fillStyle = '#FFD700'
+    ctx.font = 'bold 40px "Press Start 2P", monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText('VITÓRIA!', W / 2, 280)
+
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '12px "Press Start 2P", monospace'
+    ctx.fillText('Pontuação: ' + pontuacao, W / 2, 360)
+
+    ctx.fillStyle = '#aaaaaa'
+    ctx.font = '10px "Press Start 2P", monospace'
+    ctx.fillText('Pressione ENTER para jogar de novo', W / 2, 460)
+} 
+
+function desenhaTrans() {
+    ctx.fillStyle = 'rgba(0,0,0,0.85)'
+    ctx.fillRect(0, 0, W, H)
+
+    ctx.fillStyle = '#FFD700'
+    ctx.font = 'bold 40px "Press Start 2P", monospace'
+    ctx.textAlign = 'center'
+    ctx.fillText(FASES[faseAtual].nome, W / 2, 350)
+
+    ctx.fillStyle = '#eeeeee'
+    ctx.font = '12px "Courier New", monospace'
+    ctx.fillText(FASES[faseAtual].sub, W / 2, 410)
 }
 
 function iniciarJogo() {

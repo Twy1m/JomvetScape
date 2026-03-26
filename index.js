@@ -22,6 +22,8 @@ let bonus           // array de bônus
 let pontuacao = 0
 let faseAtual = 0
 let tick      = 0   // contador geral de frames
+let tickTrans = 0
+
 
 const FASES = [
     {
@@ -68,9 +70,7 @@ const FASES = [
 const keys = {}
 
 //e.key retorna o caractere, e.code retorna a posição física da tecla
-document.addEventListener('keydown', (e) => {
-    keys[e.code] = true
-})
+
 document.addEventListener('keyup', (e) => {
     keys[e.code] = false
 })
@@ -105,7 +105,7 @@ function checarColisoes() {
 
         // colisão com inimigos
         inimigos.forEach(en => {
-            if (pl.colide(en) && pl.hit()) {
+            if (pl.colide(en) && pl.recebeDano()) {
                 en.reset()
             }
         })
@@ -129,6 +129,15 @@ function checarColisoes() {
 
 function atualiza() {
     tick++
+
+    if (estado === ST.TRANS) {
+        tickTrans++
+        if (tickTrans >= 180) {
+            estado = ST.JOGO
+            tickTrans = 0
+        }
+        return
+    }
     if (estado !== ST.JOGO) return
 
     p1.update(keys)
@@ -189,15 +198,15 @@ function desenhaHUD() {
 
     // pontuação
     ctx.fillStyle = '#FFD700'
-    ctx.font = '14px "Press Start 2P", monospace'
+    ctx.font = '16px "Press Start 2P", monospace'
     ctx.textAlign = 'center'
-    ctx.fillText(pontuacao + ' pts', W / 2, 32)
+    ctx.fillText(pontuacao + ' pts', W / 2, 35)
 
     // vidas P1
     ctx.fillStyle = '#4fc3f7'
-    ctx.font = '10px "Press Start 2P", monospace'
+    ctx.font = '14px "Press Start 2P", monospace'
     ctx.textAlign = 'left'
-    ctx.fillText('P1  ' + '❤'.repeat(p1.vida), 10, 32)
+    ctx.fillText('P1  ' + '❤'.repeat(p1.vida), 10, 40)
 
     // vidas P2
     ctx.fillStyle = '#ff8a65'

@@ -18,10 +18,15 @@ export class Personagem {
 
     this.w = 76;
     this.h = 76;
-    this.y = 690
+    this.y = 690;
   }
 
   update(keys) {
+
+    if (this.vida <= 0) {
+        this.vivo = false;
+        return; // Para de processar movimento se estiver morto
+    }
     const A = keys[this.lk];
     const D = keys[this.rk];
 
@@ -55,12 +60,13 @@ export class Personagem {
   }
 
   draw(ctx) {
+      if (!this.vivo) return; // Se estiver morto, sai da função e não desenha nada
+
     // pisca quando invencível, A cada 5 frames alterna entre mostrar e esconder, cria o efeito de piscar.
     const bob = Math.sin(this.tick * 0.08) * 3;
 
-    if (this.inv > 0 && Math.floor(this.inv / 5) % 2 === 1) {
-      return ctx.drawImage(this.imagem, this.x, this.y + bob, this.w, this.h);
-    }
+
+    if (this.inv > 0 && Math.floor(this.inv / 5) % 2 === 1) return;
 
     // desenha a imagem
     ctx.save();
@@ -96,7 +102,7 @@ export class Inimigo {
   constructor(faseAtual, stagger = 0) {
     //Stagger, número que espaça os inimigos no spawn inicial (0, 1, 2, 3...)
 
-    this.faseAtual = faseAtual
+    this.faseAtual = faseAtual;
 
     //Tamanho do inimigo
     this.w = 76;
@@ -123,8 +129,8 @@ export class Inimigo {
     });
 
     this._spawn(stagger * 160);
-    this.vel = faseAtual.vMin + Math.random() * (faseAtual.vMax - faseAtual.vMin)  //
-    
+    this.vel =
+      faseAtual.vMin + Math.random() * (faseAtual.vMax - faseAtual.vMin); //
   }
 
   _spawn(yOff) {
@@ -177,68 +183,105 @@ export class Inimigo {
 }
 
 export class Bonus {
-    constructor(yOff = 0) {
-        this.w     = 36
-        this.h     = 36
-        this.ativo = true
-        this.cd    = 0
-        this.tick  = 0
-        this.spin  = 0
-        this._spawn(yOff)
+  constructor(yOff = 0) {
+    this.w = 36;
+    this.h = 36;
+    this.ativo = true;
+    this.cd = 0;
+    this.tick = 0;
+    this.spin = 0;
+    this._spawn(yOff);
+  }
+
+  update() {
+    // Se não estiver ativo, conta o cooldown
+    if (!this.ativo) {
+        this.cd--;
+        if (this.cd <= 0) this._spawn(Math.random() * 250);
+        return;
+    }
+    
+    if (this.vida <= 0) {
+        this.vivo = false;
+        return;
     }
 
-    update() {
-        // Se não estiver ativo, conta o cooldown
-        if (!this.ativo) {
-            this.cd--
-            if (this.cd <= 0) this._spawn(Math.random() * 250)
-            return
-        }
-    
-        // Se estiver ativo, move pra baixo
-        this.y   += this.vel
-        this.spin += 0.04
-        this.tick++
-    
-        // Saiu da tela por baixo
-        if (this.y > 820) this._spawn(0)
+    // Se estiver ativo, move pra baixo
+    this.y += this.vel;
+    this.spin += 0.04;
+    this.tick++;
+
+    // Saiu da tela por baixo
+    if (this.y > 820) this._spawn(0);
+  }
+
+  coletar() {
+    this.ativo = false;
+    this.cd = 110 + Math.floor(Math.random() * 150);
+  }
+
+  draw(ctx) {
+    if (!this.ativo) return;
+
+    ctx.save();
+    ctx.translate(this.x + this.w / 2, this.y + this.h / 2);
+    ctx.rotate(Math.sin(this.tick * 0.05) * 0.2);
+
+    if (this.tipo === "coracao") desenhaCoracao(ctx);
+    else if (this.tipo === "osso") {
+      ctx.rotate(this.spin);
+      desenhaOsso(ctx);
+    } else {
+      ctx.rotate(this.spin);
+      desenhaStar(ctx);
     }
 
-    coletar() {
-        this.ativo = false
-        this.cd = 110 + Math.floor(Math.random() * 150)
-    }
-
-    draw(ctx) {
-        if (!this.ativo) return
-    
-        ctx.save()
-        ctx.translate(this.x + this.w / 2, this.y + this.h / 2)
-        ctx.rotate(Math.sin(this.tick * 0.05) * 0.2)
-    
-        if (this.tipo === 'coracao')     desenhaCoracao(ctx)
-        else if (this.tipo === 'osso') { ctx.rotate(this.spin); desenhaOsso(ctx) }
-        else                           { ctx.rotate(this.spin); desenhaStar(ctx) }
-    
-        ctx.restore()
-    }
+    ctx.restore();
+  }
+  _spawn(yOff) {
+    this.x = 30 + Math.random() * (600 - 96);
+    this.y = -this.h - yOff;
+    this.vel = 1.2 + Math.random() * 1.6;
+    this.ativo = true;
+    this.spin = Math.random() * Math.PI * 2;
+    const r = Math.random();
+    this.tipo = r < 0.28 ? "coracao" : r < 0.58 ? "osso" : "estrela";
+  }
 }
 
 function desenhaCoracao(ctx) {
-    ctx.fillStyle = '#ff4081'
-    ctx.beginPath()
-    // curvas bezier formando um coração
-    ctx.fill()
+    ctx.fillStyle = "#ff4081";
+    ctx.beginPath();
+    // Desenho centralizado no 0,0 (pois usamos translate no Bonus.draw)
+    ctx.moveTo(0, 10);
+    ctx.bezierCurveTo(-15, -15, -30, 5, 0, 20);
+    ctx.bezierCurveTo(30, 5, 15, -15, 0, 10);
+    ctx.fill();
+    ctx.closePath();
 }
 
 function desenhaOsso(ctx) {
-    ctx.fillStyle = '#f5f5dc'
-    // retângulo no meio + 4 círculos nas pontas
-    ctx.fill()
+    ctx.fillStyle = "#f5f5dc";
+    // Retângulo central
+    ctx.fillRect(-12, -4, 24, 8);
+    // As 4 pontas (círculos)
+    const pts = [[-12, -6], [-12, 6], [12, -6], [12, 6]];
+    pts.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], 6, 0, Math.PI * 2);
+        ctx.fill();
+    });
 }
 
 function desenhaStar(ctx) {
-    ctx.fillStyle = '#FFD700'
-    // 5 pontas com lineTo
-    ctx.fill()
+    ctx.fillStyle = "#FFD700";
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+        ctx.lineTo(Math.cos((18 + i * 72) / 180 * Math.PI) * 15,
+                   -Math.sin((18 + i * 72) / 180 * Math.PI) * 15);
+        ctx.lineTo(Math.cos((54 + i * 72) / 180 * Math.PI) * 7,
+                   -Math.sin((54 + i * 72) / 180 * Math.PI) * 7);
+    }
+    ctx.closePath();
+    ctx.fill();
 }

@@ -32,9 +32,9 @@ export class Personagem {
 
     //Velocidade X
     if (D && !A) {
-      this.vx = 6;
+      this.vx = 2;
     } else if (A && !D) {
-      this.vx = -6;
+      this.vx = -2;
     } else {
       this.vx *= 0.7;
     }

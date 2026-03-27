@@ -32,9 +32,9 @@ export class Personagem {
 
     //Velocidade X
     if (D && !A) {
-      this.vx = 2;
+      this.vx = 6;
     } else if (A && !D) {
-      this.vx = -2;
+      this.vx = -6;
     } else {
       this.vx *= 0.7;
     }
@@ -238,6 +238,7 @@ export class Bonus {
 
     ctx.restore();
   }
+  
   _spawn(yOff) {
     this.x = 30 + Math.random() * (600 - 96);
     this.y = -this.h - yOff;

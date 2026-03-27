@@ -36,8 +36,8 @@ const FASES = [
     sub: "Trabalhem juntos!",
     meta: 100, // pontos para avançar
     num: 4, // quantidade de inimigos
-    vMin: 1.5, // velocidade mínima dos inimigos
-    vMax: 2.5, // velocidade máxima
+    vMin: 2.5, // velocidade mínima dos inimigos
+    vMax: 5.5, // velocidade máxima
     zigzag: false, // inimigos em zigzag?
     ceuA: "#0a1628", // cor do topo do céu
     ceuB: "#162d4a", // cor da base do céu
@@ -48,9 +48,9 @@ const FASES = [
     nome: "FASE 2",
     sub: "Estão mais rápidos!",
     meta: 200,
-    num: 6,
-    vMin: 2.5,
-    vMax: 3.5,
+    num: 5,
+    vMin: 5.5,
+    vMax: 8.5,
     zigzag: true,
     ceuA: "#180a2e",
     ceuB: "#351252",
@@ -60,10 +60,10 @@ const FASES = [
   {
     nome: "FASE 3",
     sub: "MODO CAOS!",
-    meta: 1000,
-    num: 8,
-    vMin: 3.0,
-    vMax: 4,
+    meta: 500,
+    num: 6,
+    vMin: 8.0,
+    vMax: 11,
     zigzag: true,
     ceuA: "#2a0808",
     ceuB: "#521212",
@@ -157,10 +157,10 @@ function desenhaInicio() {
   ctx.fillRect(0, 0, W, H);
 
   // Título com sombra
-  ctx.shadowBlur = 15;
+  ctx.shadowBlur = 20;
   ctx.shadowColor = "#FFD700";
   ctx.fillStyle = "#FFD700";
-  ctx.font = '36px "Press Start 2P", monospace';
+  ctx.font = '30px monospace';
   ctx.textAlign = "center";
   ctx.fillText("JOMVETSCAPE", W / 2, 100);
   ctx.shadowBlur = 0;
@@ -170,7 +170,7 @@ function desenhaInicio() {
   const opcoes = ["1 JOGADOR", "2 JOGADORES", "SOBRE"];
   opcoes.forEach((texto, i) => {
     const atual = i + 1;
-    ctx.font = '20px "Press Start 2P", monospace';
+    ctx.font = '20px monospace';
 
     if (selecaoMenu === atual) {
       ctx.fillStyle = "#fff";
@@ -182,21 +182,26 @@ function desenhaInicio() {
   });
 
     ctx.fillStyle = "#FFD700";
-  ctx.font = '13px "Press Start 2P", monospace';
-  ctx.fillText("CONTROLES", W / 2, 550);
+  ctx.font = '13px monospace';
+  ctx.fillText("CONTROLES", W / 2, 530);
   ctx.fillStyle = "#4fc3f7";
   ctx.font = '13px "Courier New", monospace';
-  ctx.fillText("P1  A / D para mover", W / 2, 580);
+  ctx.fillText("P1  A / D para mover", W / 2, 560);
   ctx.fillStyle = "#ff8a65";
-  ctx.fillText("P2  ← / → para mover", W / 2, 610);
+  ctx.fillText("P2  ← / → para mover", W / 2, 590);
+  ctx.fillStyle = "#b30b0b";
+  ctx.fillText("❤  Aumenta em 1 a vida", W / 2, 630);
+  ctx.fillStyle = "#d8d511";
+  ctx.fillText("⭐ 🦴 bonus de pontos", W / 2, 650);
+  
 
   ctx.fillStyle = "#aaaaaa";
   ctx.font = '12px "Courier New", monospace';
-  ctx.fillText("Desvie dos inimigos e colete itens!", W / 2, 700);
+  ctx.fillText("Desvie dos inimigos e colete itens!", W / 2, 720);
 
-  ctx.font = '15px "Press Start 2P", monospace';
+  ctx.font = '15px, monospace';
   ctx.fillStyle = "#888";
-  ctx.fillText("Use SETAS para escolher e ENTER", W / 2, 750);
+  ctx.fillText("Use SETAS para escolher e ENTER", W / 2, 770);
 }
 
 function desenhaHUD() {
@@ -204,7 +209,7 @@ function desenhaHUD() {
   ctx.fillRect(0, 0, W, 60);
 
   ctx.fillStyle = "#FFD700";
-  ctx.font = '18px "Press Start 2P", monospace';
+  ctx.font = '18px monospace';
   ctx.textAlign = "center";
   ctx.fillText(pontuacao + " PTS", W / 2, 38);
 
@@ -226,15 +231,15 @@ function desenhaOver() {
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = "#ff4444";
-  ctx.font = '40px "Press Start 2P", monospace';
+  ctx.font = '40px monospace';
   ctx.textAlign = "center";
   ctx.fillText("GAME OVER", W / 2, 300);
 
   ctx.fillStyle = "#fff";
-  ctx.font = '16px "Press Start 2P", monospace';
+  ctx.font = '16px monospace';
   ctx.fillText("SCORE: " + pontuacao, W / 2, 380);
 
-  ctx.font = '10px "Press Start 2P", monospace';
+  ctx.font = '10px monospace';
   ctx.fillText("PRESSIONE ENTER PARA VOLTAR AO MENU", W / 2, 500);
 }
 
@@ -243,16 +248,16 @@ function desenhaVitoria() {
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = "#FFD700";
-  ctx.font = 'bold 40px "Press Start 2P", monospace';
+  ctx.font = 'bold 40px, monospace';
   ctx.textAlign = "center";
   ctx.fillText("VITÓRIA!", W / 2, 280);
 
   ctx.fillStyle = "#ffffff";
-  ctx.font = '12px "Press Start 2P", monospace';
+  ctx.font = '12px, monospace';
   ctx.fillText("Pontuação: " + pontuacao, W / 2, 360);
 
   ctx.fillStyle = "#aaaaaa";
-  ctx.font = '10px "Press Start 2P", monospace';
+  ctx.font = '10px, monospace';
   ctx.fillText("Pressione ENTER para jogar de novo", W / 2, 460);
 }
 
@@ -261,7 +266,7 @@ function desenhaTrans() {
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = "#FFD700";
-  ctx.font = 'bold 40px "Press Start 2P", monospace';
+  ctx.font = 'bold 40px monospace';
   ctx.textAlign = "center";
   ctx.fillText(FASES[faseAtual].nome, W / 2, 350);
 
@@ -279,19 +284,21 @@ function desenhaSobre() {
 
   // Título
   ctx.fillStyle = "#FFD700";
-  ctx.font = '16px "Press Start 2P", monospace';
+  ctx.font = '16px monospace';
   ctx.textAlign = "center";
   ctx.fillText("SOBRE", W / 2, 250);
 
   // Texto sobre o criador
   ctx.fillStyle = "#ffffff";
-  ctx.font = '11px "Courier New", monospace';
-  ctx.fillText("Feito por Matheus Steingraber", W / 2, 310);
+  ctx.font = '12px "Courier New", monospace';
+  ctx.fillText("Feito por Matheus Steingraber", W / 2, 320);
   ctx.fillText("Github Twy1m", W / 2, 340);
+  ctx.fillText("Gmail matheusg.stein@gmail.com", W / 2, 360);
+  ctx.fillText("Product Owner Carlos Roberto da Silva Filho", W / 2, 420);
 
   // Voltar
   ctx.fillStyle = "#555";
-  ctx.font = '9px "Press Start 2P", monospace';
+  ctx.font = '15px, monospace';
   ctx.fillText("ENTER para voltar", W / 2, 720);
 }
 
@@ -367,7 +374,7 @@ function iniciarJogo() {
 
   if (modoJogadores === 1) {
     p1 = new Personagem(
-      W / 2 - 38,
+      W / 2 - 30,
       "img/jomvet8bit.png",
       "#4fc3f7",
       "KeyA",

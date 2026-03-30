@@ -149,7 +149,7 @@ function desenhaBG() {
 
   // chão
   ctx.fillStyle = f.chao;
-  ctx.fillRect(0, H - 40, W, 40);
+  ctx.fillRect(0, 0, W, H); // Começa em (0,0) e vai até a largura W e altura H
 }
 
 function desenhaInicio() {

@@ -182,17 +182,17 @@ function desenhaInicio() {
   });
 
     ctx.fillStyle = "#FFD700";
-  ctx.font = '13px monospace';
+  ctx.font = '16px monospace';
   ctx.fillText("CONTROLES", W / 2, 530);
   ctx.fillStyle = "#4fc3f7";
-  ctx.font = '13px "Courier New", monospace';
-  ctx.fillText("P1  A / D para mover", W / 2, 560);
+  ctx.font = '15px "Courier New", monospace';
+  ctx.fillText("P1  A / D para mover", W / 2, 570);
   ctx.fillStyle = "#ff8a65";
-  ctx.fillText("P2  ← / → para mover", W / 2, 590);
+  ctx.fillText("P2  ← / → para mover", W / 2, 600);
   ctx.fillStyle = "#b30b0b";
-  ctx.fillText("❤  Aumenta em 1 a vida", W / 2, 630);
+  ctx.fillText("❤  Aumenta em 1 a vida", W / 2, 640);
   ctx.fillStyle = "#d8d511";
-  ctx.fillText("⭐ 🦴 bonus de pontos", W / 2, 650);
+  ctx.fillText("⭐ 🦴 bonus de pontos", W / 2, 660);
   
 
   ctx.fillStyle = "#aaaaaa";
@@ -290,7 +290,7 @@ function desenhaSobre() {
 
   // Texto sobre o criador
   ctx.fillStyle = "#ffffff";
-  ctx.font = '12px "Courier New", monospace';
+  ctx.font = '16px "Courier New", monospace';
   ctx.fillText("Feito por Matheus Steingraber", W / 2, 320);
   ctx.fillText("Github Twy1m", W / 2, 340);
   ctx.fillText("Gmail matheusg.stein@gmail.com", W / 2, 360);

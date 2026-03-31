@@ -9,6 +9,9 @@ const H = 800;
 const imgJomvet = new Image()
 imgJomvet.src = 'img/jomvet8bit.png'
 
+const imgBg = new Image();
+imgBg.src = 'img/Bg.png';
+
 const ST = {
   INICIO: 0,
   TRANS: 1, // transição entre fases
@@ -34,7 +37,7 @@ const FASES = [
   {
     nome: "FASE 1",
     sub: "Trabalhem juntos!",
-    meta: 100, // pontos para avançar
+    meta: 50, // pontos para avançar
     num: 4, // quantidade de inimigos
     vMin: 2.5, // velocidade mínima dos inimigos
     vMax: 5.5, // velocidade máxima
@@ -47,7 +50,7 @@ const FASES = [
   {
     nome: "FASE 2",
     sub: "Estão mais rápidos!",
-    meta: 200,
+    meta: 100,
     num: 5,
     vMin: 5.5,
     vMax: 8.5,
@@ -60,7 +63,7 @@ const FASES = [
   {
     nome: "FASE 3",
     sub: "MODO CAOS!",
-    meta: 500,
+    meta: 150,
     num: 6,
     vMin: 8.0,
     vMax: 11,
@@ -140,16 +143,28 @@ function desenhaJogo() {
 function desenhaBG() {
   const f = FASES[faseAtual];
 
-  // gradiente do céu
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, f.ceuA);
-  g.addColorStop(1, f.ceuB);
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
+  if (imgBg.complete && imgBg.naturalWidth > 0) {
+    ctx.drawImage(imgBg, 0, 0, W, H);
+  }
+  
+  if(FASES > [2]){
+    ctx.save();
+    
+    // gradiente do céu
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, f.ceuA)
+    g.addColorStop(1, f.ceuB)
+    
+    ctx.fillStyle = g;
+    ctx.globalAlpha = 0.6; 
+    ctx.fillRect(0, 0, W, H);
 
-  // chão
-  ctx.fillStyle = f.chao;
-  ctx.fillRect(0, 0, W, H); // Começa em (0,0) e vai até a largura W e altura H
+    g.addColorStop(0, f.ceuA)
+    g.addColorStop(1, f.ceuB)
+
+    ctx.restore()
+  }
+
 }
 
 function desenhaInicio() {

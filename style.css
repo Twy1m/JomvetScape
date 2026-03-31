@@ -18,23 +18,10 @@ body {
     overflow: hidden;
 }
 
-/* .wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100vw;
-    min-height: 100vh;
-}
-
-.game-area {
-    position: relative;
-} */
-
 canvas {
     display: block;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    /* Glow effect no canvas */
     box-shadow:
         0 0 0 2px rgba(255, 215, 0, 0.15),
         0 0 30px rgba(255, 140, 0, 0.12),

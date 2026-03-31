@@ -70,7 +70,7 @@ export class Personagem {
 
     // desenha a imagem
     ctx.save();
-    ctx.globalCompositeOperation = "screen"; // remove o fundo preto das imagens dos sprites. save() e restore() garantem que esse efeito não vaze para outros elementos.
+    // ctx.globalCompositeOperation = "screen"; // remove o fundo preto das imagens dos sprites. save() e restore() garantem que esse efeito não vaze para outros elementos.
     ctx.drawImage(this.imagem, this.x, this.y + bob, this.w, this.h);
     ctx.restore();
 
@@ -171,7 +171,7 @@ export class Inimigo {
     const img = this.frames[this.fi];
     if (img.complete && img.naturalWidth > 0) {
       ctx.save();
-      ctx.globalCompositeOperation = "screen";
+      // ctx.globalCompositeOperation = "screen";
       ctx.drawImage(img, this.x, this.y, this.w, this.h);
       ctx.restore();
     }

@@ -39,8 +39,8 @@ const FASES = [
     sub: "Trabalhem juntos!",
     meta: 50, // pontos para avançar
     num: 4, // quantidade de inimigos
-    vMin: 2.5, // velocidade mínima dos inimigos
-    vMax: 5.5, // velocidade máxima
+    vMin: 3.5, // velocidade mínima dos inimigos
+    vMax: 6.5, // velocidade máxima
     zigzag: false, // inimigos em zigzag?
     ceuA: "#0a1628", // cor do topo do céu
     ceuB: "#162d4a", // cor da base do céu
@@ -50,10 +50,10 @@ const FASES = [
   {
     nome: "FASE 2",
     sub: "Estão mais rápidos!",
-    meta: 100,
-    num: 5,
-    vMin: 5.5,
-    vMax: 8.5,
+    meta: 150,
+    num: 6,
+    vMin: 6.5,
+    vMax: 9.5,
     zigzag: true,
     ceuA: "#180a2e",
     ceuB: "#351252",
@@ -63,10 +63,10 @@ const FASES = [
   {
     nome: "FASE 3",
     sub: "MODO CAOS!",
-    meta: 150,
+    meta: 250,
     num: 6,
-    vMin: 8.0,
-    vMax: 11,
+    vMin: 9.0,
+    vMax: 12,
     zigzag: true,
     ceuA: "#2a0808",
     ceuB: "#521212",
@@ -197,10 +197,10 @@ function desenhaInicio() {
   });
 
     ctx.fillStyle = "#FFD700";
-  ctx.font = '16px monospace';
+  ctx.font = '17px monospace';
   ctx.fillText("CONTROLES", W / 2, 530);
   ctx.fillStyle = "#4fc3f7";
-  ctx.font = '15px "Courier New", monospace';
+  ctx.font = '16x "Courier New", monospace';
   ctx.fillText("P1  A / D para mover", W / 2, 570);
   ctx.fillStyle = "#ff8a65";
   ctx.fillText("P2  ← / → para mover", W / 2, 600);
@@ -211,7 +211,7 @@ function desenhaInicio() {
   
 
   ctx.fillStyle = "#aaaaaa";
-  ctx.font = '12px "Courier New", monospace';
+  ctx.font = '16px "Courier New", monospace';
   ctx.fillText("Desvie dos inimigos e colete itens!", W / 2, 720);
 
   ctx.font = '15px, monospace';
@@ -220,7 +220,7 @@ function desenhaInicio() {
 }
 
 function desenhaHUD() {
-  ctx.fillStyle = "rgba(0,0,0,0.7)";
+  ctx.fillStyle = "rgba(0,0,0)";
   ctx.fillRect(0, 0, W, 60);
 
   ctx.fillStyle = "#FFD700";
@@ -242,20 +242,20 @@ function desenhaHUD() {
 }
 
 function desenhaOver() {
-  ctx.fillStyle = "rgba(20, 0, 0, 0.9)";
+  ctx.fillStyle = "rgba(20, 0, 0)";
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = "#ff4444";
-  ctx.font = '40px monospace';
+  ctx.font = '60px monospace';
   ctx.textAlign = "center";
-  ctx.fillText("GAME OVER", W / 2, 300);
+  ctx.fillText("GAME OVER", W / 2, 280);
 
   ctx.fillStyle = "#fff";
-  ctx.font = '16px monospace';
-  ctx.fillText("SCORE: " + pontuacao, W / 2, 380);
+  ctx.font = '20px monospace';
+  ctx.fillText("Pontuação: " + pontuacao, W / 2, H / 2 + 60);
 
-  ctx.font = '10px monospace';
-  ctx.fillText("PRESSIONE ENTER PARA VOLTAR AO MENU", W / 2, 500);
+  ctx.font = '16px monospace';
+  ctx.fillText("PRESSIONE ENTER PARA VOLTAR AO MENU", W / 2, 760);
 }
 
 function desenhaVitoria() {
@@ -263,21 +263,21 @@ function desenhaVitoria() {
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = "#FFD700";
-  ctx.font = 'bold 40px, monospace';
+  ctx.font = 'bold 60px monospace';
   ctx.textAlign = "center";
   ctx.fillText("VITÓRIA!", W / 2, 280);
 
   ctx.fillStyle = "#ffffff";
-  ctx.font = '12px, monospace';
-  ctx.fillText("Pontuação: " + pontuacao, W / 2, 360);
+  ctx.font = '20px monospace';
+  ctx.fillText("Pontuação: " + pontuacao, W / 2, H/2 + 60);
 
   ctx.fillStyle = "#aaaaaa";
-  ctx.font = '10px, monospace';
-  ctx.fillText("Pressione ENTER para jogar de novo", W / 2, 460);
+  ctx.font = '16px monospace';
+  ctx.fillText("Pressione ENTER para jogar de novo", W / 2, 760);
 }
 
 function desenhaTrans() {
-  ctx.fillStyle = "rgba(0,0,0,0.85)";
+  ctx.fillStyle = "rgba(0,0,0)";
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = "#FFD700";
@@ -286,7 +286,7 @@ function desenhaTrans() {
   ctx.fillText(FASES[faseAtual].nome, W / 2, 350);
 
   ctx.fillStyle = "#eeeeee";
-  ctx.font = '12px "Courier New", monospace';
+  ctx.font = '16px "Courier New", monospace';
   ctx.fillText(FASES[faseAtual].sub, W / 2, 410);
 }
 
@@ -299,13 +299,13 @@ function desenhaSobre() {
 
   // Título
   ctx.fillStyle = "#FFD700";
-  ctx.font = '16px monospace';
+  ctx.font = '20px monospace';
   ctx.textAlign = "center";
   ctx.fillText("SOBRE", W / 2, 250);
 
   // Texto sobre o criador
   ctx.fillStyle = "#ffffff";
-  ctx.font = '16px "Courier New", monospace';
+  ctx.font = '17px "Courier New", monospace';
   ctx.fillText("Feito por Matheus Steingraber", W / 2, 320);
   ctx.fillText("Github Twy1m", W / 2, 340);
   ctx.fillText("Gmail matheusg.stein@gmail.com", W / 2, 360);

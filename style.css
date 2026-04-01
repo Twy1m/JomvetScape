@@ -7,8 +7,9 @@
 body {
     background-color: #090e1a;
     background-image:
-        radial-gradient(ellipse at 20% 50%, rgba(20, 50, 100, 0.3) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, rgba(60, 10, 80, 0.25) 0%, transparent 55%);
+        url('./img/bg2.png');
+    background-size:cover;
+    background-repeat: no-repeat;
     color: white;
     min-height: 100vh;
     display: flex;
@@ -23,8 +24,6 @@ canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     box-shadow:
-        0 0 0 2px rgba(255, 215, 0, 0.15),
-        0 0 30px rgba(255, 140, 0, 0.12),
-        0 0 80px rgba(100, 50, 200, 0.1),
-        0 8px 40px rgba(0, 0, 0, 0.7);
+        0 0 0 2px rgb(255, 217, 0)
+        
 }

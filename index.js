@@ -55,7 +55,7 @@ let selecaoMenu = 1 // Para controlar o cursor no menu
 const FASES = [
   {
     nome: "FASE 1",
-    sub: "Trabalhem juntos!",
+    sub: "Modo Normal",
     meta: 100, // pontos para avançar
     num: 4, // quantidade de inimigos
     // vMin: 3.5, // velocidade mínima dos inimigos
@@ -71,7 +71,7 @@ const FASES = [
   },
   {
     nome: "FASE 2",
-    sub: "Estão mais rápidos!",
+    sub: "Modo Hard!",
     meta: 200,
     num: 4,
     // vMin: 6.5,

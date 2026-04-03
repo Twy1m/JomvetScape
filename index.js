@@ -9,6 +9,9 @@ const H = 800
 const imgJomvet = new Image()
 imgJomvet.src = 'img/jomvet8bit.png'
 
+const imgJomvet2 = new Image()
+imgJomvet2.src = 'img/jomvet28bit.png'
+
 const imgBg = new Image()
 imgBg.src = 'img/Bg.png'
 
@@ -319,7 +322,7 @@ function desenhaSobre() {
   ctx.fillRect(0, 0, W, H)
 
   // Foto do Jomvet
-  ctx.drawImage(imgJomvet, W/2 - 60, 80, 120, 120)
+  ctx.drawImage(imgJomvet2, W/2 - 60, 80, 120, 120)
 
   // Título
   ctx.fillStyle = "#FFD700"
